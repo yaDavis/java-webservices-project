@@ -44,22 +44,22 @@ public class HelloController {
         return "Hello, " + name + "!";
     }
 
-    // Spring equivalent of @Produces("text/plain")
-    // Only matches when client accepts text/plain and responds as text/plain.
-    @GetMapping(value = "/hello-text", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String helloText() {
-        return "Plain text response from Spring Boot.";
-    }
+    // // Spring equivalent of @Produces("text/plain")
+    // // Only matches when client accepts text/plain and responds as text/plain.
+    // @GetMapping(value = "/hello-text", produces = MediaType.TEXT_PLAIN_VALUE)
+    // public String helloText() {
+    //     return "Plain text response from Spring Boot.";
+    // }
 
     // Spring equivalent of @Produces("application/json")
     // Response content type is forced to application/json.
-    @GetMapping(value = "/hello-json", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, String> helloJson() {
-        return Map.of(
-                "message", "JSON response from Spring Boot",
-                "tip", "This endpoint uses produces=application/json"
-        );
-    }
+    // @GetMapping(value = "/hello-json", produces = MediaType.APPLICATION_JSON_VALUE)
+    // public Map<String, String> helloJson() {
+    //     return Map.of(
+    //             "message", "JSON response from Spring Boot",
+    //             "tip", "This endpoint uses produces=application/json"
+    //     );
+    // }
 
     // In-memory storage for demo purposes (normally use a database/service layer).
     private final Map<Long, Book> books = new ConcurrentHashMap<>();

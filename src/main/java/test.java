@@ -14,6 +14,8 @@ public class test {
 
     // POJO (Plain Old Java Object) class that maps to the Cat API response
     // GSON automatically maps JSON fields to Java object properties
+    // Its possible also to not decalre on a POJO, and just use a map<string, object> to hold the data
+    // but its less convenient and less safe
     public static class Cat {
         public String id;
         public String url;
@@ -61,17 +63,20 @@ public class test {
     }
 
     // Method to fetch random cat and convert to Java object using GSON
+    
     public static Cat getRandomCat() throws Exception {
         String url = "https://api.thecatapi.com/v1/images/search";
         
         // Step 1: Make HTTP GET request
         String jsonResponse = getHttpResponse(url);
+ 
+        // We get back the json respone row as a simple string
         System.out.println("\nRaw JSON Response: " + jsonResponse);
 
         // Step 2: Use GSON to convert JSON String to Java objects
         Gson gson = new Gson();
         
-        // The API returns an array, so we parse it as an array
+        // We parse it in the class of cats as an array
         Cat[] cats = gson.fromJson(jsonResponse, Cat[].class);
         
         // Return the first cat from the array
@@ -80,7 +85,7 @@ public class test {
 
     public static void main(String[] args) {
         try {
-            System.out.println("=== Java REST API Call with GSON Demo ===\n");
+            System.out.println("=== Java REST API> Call with GSON Demo ===\n");
 
             // Example 1: Fetch a random cat
             System.out.println("Example 1: Fetching a random cat...");
@@ -96,8 +101,8 @@ public class test {
             }
 
             // Example 2: Fetch cats with limit parameter
-            System.out.println("\n\nExample 2: Fetching 3 cats with query parameter...");
-            String urlWithLimit = "https://api.thecatapi.com/v1/images/search?limit=4";
+            System.out.println("\n\nExample 2: Fetching 10 cats with query parameter...");
+            String urlWithLimit = "https://api.thecatapi.com/v1/images/search?limit=10";
             String jsonResponse = getHttpResponse(urlWithLimit);
             
             Gson gson = new Gson();
@@ -105,7 +110,7 @@ public class test {
             
             System.out.println("Got " + multipleCats.length + " cats:");
             for (int i = 0; i < multipleCats.length; i++) {
-                System.out.println((i + 1) + multipleCats[i].url);
+                System.out.println((i + 1) + ") " + multipleCats[i].url);
             }
 
         } catch (Exception e) {

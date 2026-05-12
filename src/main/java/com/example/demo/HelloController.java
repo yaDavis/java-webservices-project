@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,107 +30,62 @@ import java.util.concurrent.ConcurrentHashMap;
  * - In Spring MVC, media types are controlled with consumes/produces attributes.
  *   They are the Spring equivalent of JAX-RS @Consumes and @Produces.
  */
+
+
+// Check out swagger api http://localhost:8080/swagger-ui/index.html#/
 @RestController
 @RequestMapping("/api/v1")
 public class HelloController {
 
+        // In-memory storage for demo purposes (normally use a database/service layer).
+    private Map<Integer, String> database = new HashMap<>();
+
     // Simple GET endpoint that returns plain text.
     @GetMapping("/hello")
     public String hello() {
+        System.out.println("Hello endpoint was called!");
         return "Hello from Spring Boot!";
     }
 
     // GET with query parameter: /api/v1/greet?name=Amusi
     @GetMapping("/greet")
     public String greet(@RequestParam(defaultValue = "Guest") String name) {
+        System.out.println("Greet endpoint was called! with param name=" + name);
         return "Hello, " + name + "!";
     }
 
-    // // Spring equivalent of @Produces("text/plain")
-    // // Only matches when client accepts text/plain and responds as text/plain.
-    // @GetMapping(value = "/hello-text", produces = MediaType.TEXT_PLAIN_VALUE)
-    // public String helloText() {
-    //     return "Plain text response from Spring Boot.";
-    // }
-
-    // Spring equivalent of @Produces("application/json")
-    // Response content type is forced to application/json.
-    // @GetMapping(value = "/hello-json", produces = MediaType.APPLICATION_JSON_VALUE)
-    // public Map<String, String> helloJson() {
-    //     return Map.of(
-    //             "message", "JSON response from Spring Boot",
-    //             "tip", "This endpoint uses produces=application/json"
-    //     );
-    // }
-
-    // In-memory storage for demo purposes (normally use a database/service layer).
-    private final Map<Long, Book> books = new ConcurrentHashMap<>();
-
-    @GetMapping("/books")
-    public List<Book> getAllBooks() {
-        return new ArrayList<>(books.values());
+    @GetMapping("/{id}")
+    public String getItem(@PathVariable int id) {
+        System.out.println("Get item endpoint was called! with param id=" + id);
+        return database.get(id);
     }
 
-    // GET by path variable: /api/v1/books/1
-    @GetMapping("/books/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
-        Book book = books.get(id);
-        if (book == null) {
-            return ResponseEntity.notFound().build();
+    @PostMapping("/{id}")
+    public String createItem(@PathVariable int id, @RequestBody String name) {
+        database.put(id, name);
+        System.out.println("Created item " + id + ": " + name);
+        return "Created item " + id + ": " + name;
+    }
+
+    // 4. PUT: Update an entry (e.g., /api/v1/1)
+    @PutMapping("/{id}")
+    public String updateItem(@PathVariable int id, @RequestBody String newName) {
+        if (database.containsKey(id)) {
+            database.put(id, newName);
+            System.out.println("Updated item " + id + " to: " + newName);
+            return "Updated item " + id + " to: " + newName;
         }
-        return ResponseEntity.ok(book);
+        return "Error: ID " + id + " does not exist!";
     }
 
-    // POST creates a new resource. Returns HTTP 201 Created.
-    @PostMapping(
-            value = "/books",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity<Book> createBook(@RequestBody BookRequest request) {
-        if (request.title() == null || request.title().isBlank()) {
-            return ResponseEntity.badRequest().build();
+    @DeleteMapping("/{id}")
+    public String deleteItem(@PathVariable int id) {
+        if (database.containsKey(id)) {
+            database.remove(id);
+            System.out.println("Deleted item " + id);
+            return "Deleted item " + id;
         }
-
-        long id = books.size() + 1L;
-        Book created = new Book(id, request.title(), request.author());
-        books.put(id, created);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        return "Error: ID " + id + " not found!";
     }
 
-    // PUT updates an existing resource by ID.
-    @PutMapping("/books/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody BookRequest request) {
-        if (!books.containsKey(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        Book updated = new Book(id, request.title(), request.author());
-        books.put(id, updated);
-        return ResponseEntity.ok(updated);
-    }
-
-    // DELETE removes a resource and returns 204 No Content.
-    @DeleteMapping("/books/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
-        if (!books.containsKey(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        books.remove(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    // Spring equivalent of @Consumes("text/plain") + @Produces("text/plain")
-    @PostMapping(
-            value = "/echo",
-            consumes = MediaType.TEXT_PLAIN_VALUE,
-            produces = MediaType.TEXT_PLAIN_VALUE
-    )
-    public String echoPlainText(@RequestBody String message) {
-        return "Server received: " + message;
-    }
-
-    // record -> concise DTO/entity style classes in Java.
-    public record Book(Long id, String title, String author) {}
-
-    public record BookRequest(String title, String author) {}
 }

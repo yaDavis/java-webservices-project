@@ -1,8 +1,7 @@
 package com.example.demo;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,21 +13,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * PRESENTATION NOTES:
  * - @RestController: marks this class as a REST endpoint provider.
- *   Spring automatically serializes return values to JSON.
  * - @RequestMapping("/api/v1"): common base URL for all endpoints in this class.
  * - Each HTTP method annotation (@GetMapping/@PostMapping/@PutMapping/@DeleteMapping)
  *   maps one Java method to one REST operation.
- * - In Spring MVC, media types are controlled with consumes/produces attributes.
- *   They are the Spring equivalent of JAX-RS @Consumes and @Produces.
  */
 
 
@@ -37,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/api/v1")
 public class HelloController {
 
-        // In-memory storage for demo purposes (normally use a database/service layer).
+     // In-memory storage for demo purposes (normally use a database/service layer).
     private Map<Integer, String> database = new HashMap<>();
 
     // Simple GET endpoint that returns plain text.
@@ -60,6 +53,8 @@ public class HelloController {
         return database.get(id);
     }
 
+    // You can only ask for 1 requestbody paramater, but you can make it a complex object that contains multiple fields
+    // For example build a class of cats with the varialbes in there with getters and setters and send that as the request body, and then you can access the individual fields in the class
     @PostMapping("/{id}")
     public String createItem(@PathVariable int id, @RequestBody String name) {
         database.put(id, name);

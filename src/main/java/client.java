@@ -10,17 +10,17 @@ import java.net.URL;
  * - Using GSON to parse JSON responses into Java objects
  * - How Java handles JSON serialization/deserialization
  */
-public class test {
+public class client {
 
     // POJO (Plain Old Java Object) class that maps to the Cat API response
     // GSON automatically maps JSON fields to Java object properties
     // Its possible also to not decalre on a POJO, and just use a map<string, object> to hold the data
     // but its less convenient and less safe
     public static class Cat {
-        public String id;
-        public String url;
-        public int width;
-        public int height;
+        private String id;
+        private String url;
+        private int width;
+        private int height;
 
         @Override
         public String toString() {
@@ -65,6 +65,7 @@ public class test {
     // Method to fetch random cat and convert to Java object using GSON
     
     public static Cat getRandomCat() throws Exception {
+        //Get method to fetch a random cat
         String url = "https://api.thecatapi.com/v1/images/search";
         
         // Step 1: Make HTTP GET request
